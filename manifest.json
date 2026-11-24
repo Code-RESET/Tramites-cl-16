@@ -1,0 +1,13 @@
+{
+  "name": "Guía de Trámites y Requisitos IMSS",
+  "short_name": "Guía de Trámites",
+  "description": "Requisitos y lista de cotejo de documentos para ventanilla.",
+  "lang": "es-MX",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "fullscreen",
+  "orientation": "portrait",
+  "background_color": "#F4F6F5",
+  "theme_color": "#13322B",
+  "icons": [{ "src": "icons/icono.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }]
+}

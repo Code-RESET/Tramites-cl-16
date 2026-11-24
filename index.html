@@ -1,0 +1,89 @@
+<!doctype html>
+<!--
+  Guía de Trámites y Requisitos IMSS · tótem táctil vertical de 65"
+  Autor y responsable del contenido: Ing. Luis Ángel Díaz Bernal
+  Versión: ver version.json
+-->
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<meta name="theme-color" content="#13322B">
+<meta name="robots" content="noindex, nofollow">
+<title>Guía de Trámites IMSS</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icons/icono.svg" type="image/svg+xml">
+<link rel="preload" href="fonts/atkinson-hyperlegible-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/atkinson-hyperlegible-700.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="screen" id="screen">
+  <!-- Encabezado institucional: marca, horario, reloj y accesibilidad -->
+  <header class="top">
+    <div class="marca">
+      <svg viewBox="0 0 64 64" aria-hidden="true"><rect x="12" y="6" width="40" height="52" rx="6" fill="#fff"/><path d="M20 22h24M20 32h24M20 42h14" stroke="#285C4D" stroke-width="4" stroke-linecap="round"/><circle cx="48" cy="48" r="12" fill="#B38E5D"/><path d="M42 48l4 4 8-8" stroke="#fff" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div><h1>Guía de Trámites</h1><small>IMSS · Requisitos para ventanilla</small></div>
+    </div>
+    <div class="top-der">
+      <div class="reloj" aria-live="off"><b id="hora">--:--</b><span id="fecha"></span></div>
+      <button class="a11y-btn" id="a11yBtn" type="button" aria-expanded="false" aria-controls="a11yPanel">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="4.5" r="2.2" fill="currentColor"/><path d="M4 8.5c2.6.9 5.2 1.3 8 1.3s5.4-.4 8-1.3M12 9.8V15m0 0-3 6m3-6 3 6" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg>
+        <span>Accesibilidad</span>
+      </button>
+    </div>
+  </header>
+  <div class="horario-bar"><span>Horario de atención: <b id="horario"></b></span><span class="fila" id="horarioNota"></span></div>
+
+  <main id="main"><p class="empty">Cargando…</p></main>
+
+  <!-- Barra de acciones: siempre en la zona baja, al alcance de cualquier estatura o silla de ruedas -->
+  <nav class="acciones" id="acciones" aria-label="Acciones"></nav>
+
+  <!-- Temporizador de inactividad: barra discreta -->
+  <div class="idle" id="idle" hidden><div class="idle-fill" id="idleFill"></div></div>
+  <footer class="bottom"><span id="demoBar" hidden></span><span class="ver" id="ver"></span></footer>
+</div>
+
+<!-- Panel de accesibilidad -->
+<div class="a11y-panel" id="a11yPanel" hidden role="dialog" aria-label="Opciones de accesibilidad">
+  <p class="a11y-tit">Accesibilidad</p>
+  <button type="button" class="toggle" data-a11y="hc" aria-pressed="false"><span class="sw"></span>Alto contraste</button>
+  <button type="button" class="toggle" data-a11y="lg" aria-pressed="false"><span class="sw"></span>Letra más grande</button>
+  <button type="button" class="big" data-a11y-cerrar>Listo</button>
+</div>
+
+<!-- Ventana de bancos autorizados -->
+<div class="modal" id="modalBancos" hidden>
+  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="bancosTit">
+    <h2 id="bancosTit">Bancos autorizados</h2>
+    <p class="modal-sub">Lista del cartel de bancos autorizados de la ventanilla.</p>
+    <ul class="bancos" id="listaBancos"></ul>
+    <button type="button" class="big" data-cerrar-modal>Cerrar</button>
+  </div>
+</div>
+
+<!-- Teclado en pantalla para el buscador -->
+<div class="teclado" id="teclado" hidden aria-label="Teclado en pantalla"></div>
+
+<!-- Aviso antes de reiniciar por inactividad -->
+<div class="sigue" id="sigue" hidden role="alert">
+  <p><b>¿Sigue ahí?</b> La pantalla volverá al inicio en <span id="sigueSeg">10</span> s.</p>
+  <button type="button" class="big">Sí, sigo aquí</button>
+</div>
+
+<!-- Pantalla de reposo: aparece tras unos minutos sin uso y se mueve para no marcar la pantalla -->
+<div class="reposo" id="reposo" hidden>
+  <div class="reposo-card" id="reposoCard">
+    <p class="reposo-titulo">Guía de Trámites IMSS</p>
+    <p class="reposo-sub">Toque la pantalla y vea qué documentos debe traer antes de pasar a ventanilla</p>
+    <p class="reposo-dest" id="reposoDest"></p>
+  </div>
+</div>
+
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

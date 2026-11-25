@@ -62,6 +62,29 @@
       "Banco del Bajío", "Banco del Bienestar", "BanCoppel", "Banorte", "BBVA Bancomer"
     ],
 
+    /* Fotos reales de cada tipo de documento (sin datos personales). Ponga la foto en la carpeta fotos/
+       con el nombre indicado, quite las dos barras // de su renglón y anótela también en sw.js.
+       Sin foto se muestra un dibujo. */
+    fotos: {
+      // "ine": "fotos/ine.jpg",
+      // "acta-nacimiento": "fotos/acta-nacimiento.jpg",
+      // "acta-defuncion": "fotos/acta-defuncion.jpg",
+      // "acta-matrimonio": "fotos/acta-matrimonio.jpg",
+      // "comprobante-domicilio": "fotos/comprobante-domicilio.jpg",
+      // "clabe": "fotos/clabe.jpg",
+      // "estado-cuenta-afore": "fotos/estado-cuenta-afore.jpg",
+      // "documento-nss": "fotos/documento-nss.jpg",
+      // "hoja-no-adeudo": "fotos/hoja-no-adeudo.jpg",
+      // "juicio-tutela": "fotos/juicio-tutela.jpg",
+      // "juicio-dependencia": "fotos/juicio-dependencia.jpg",
+      // "carta-identidad": "fotos/carta-identidad.jpg",
+      // "factura-funeraria": "fotos/factura-funeraria.jpg",
+      // "curp": "fotos/curp.jpg",
+      // "constancia-estudios": "fotos/constancia-estudios.jpg",
+      // "dictamen-invalidez": "fotos/dictamen-invalidez.jpg",
+      // "incapacidad": "fotos/incapacidad.jpg"
+    },
+
     categorias: [
       { id: "pensiones",    nombre: "Pensiones" },
       { id: "viudez",       nombre: "Viudez y Orfandad" },

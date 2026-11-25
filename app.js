@@ -112,27 +112,40 @@ var DIB = {
   medico: P + L(9, 20) + '<rect x="35" y="20" width="10" height="26" rx="2" fill="#a3262e"/><rect x="27" y="28" width="26" height="10" rx="2" fill="#a3262e"/>',
   doc: P + L(10) + L(17) + L(24) + L(31, 22) + L(38) + L(45, 18)
 };
+// Tipo de documento de cada requisito. Cada tipo usa la foto fotos/<tipo>.jpg si está anotada en GUIA.fotos (data.js).
 function tipoDoc(it) {
   var t = norm(it.t);
-  if (/\bine\b/.test(t) && t.indexOf('copia') < 0) return 'ine';
-  if (t.indexOf('copia del ine') >= 0) return 'ine';
-  if (t.indexOf('carta de identidad') >= 0) return 'ine';
+  if (it.tipo) return it.tipo;
+  if (t.indexOf('carta de identidad') >= 0) return 'carta-identidad';
+  if (/\bine\b/.test(t)) return 'ine';
   if (t.indexOf('clabe') >= 0) return 'clabe';
-  if (t.indexOf('acta') >= 0) return 'acta';
-  if (t.indexOf('domicilio') >= 0) return 'domicilio';
-  if (t.indexOf('afore') >= 0 || t.indexOf('estado de cuenta') >= 0) return 'estado';
-  if (t.indexOf('no adeudo') >= 0) return 'noadeudo';
-  if (t.indexOf('juicio') >= 0) return 'juicio';
-  if (t.indexOf('factura') >= 0) return 'factura';
+  if (t.indexOf('defuncion') >= 0) return 'acta-defuncion';
+  if (t.indexOf('matrimonio') >= 0) return 'acta-matrimonio';
+  if (t.indexOf('acta') >= 0) return 'acta-nacimiento';
+  if (t.indexOf('domicilio') >= 0) return 'comprobante-domicilio';
+  if (t.indexOf('afore') >= 0 || t.indexOf('estado de cuenta') >= 0) return 'estado-cuenta-afore';
+  if (t.indexOf('no adeudo') >= 0) return 'hoja-no-adeudo';
+  if (t.indexOf('tutela') >= 0) return 'juicio-tutela';
+  if (t.indexOf('dependencia') >= 0) return 'juicio-dependencia';
+  if (t.indexOf('factura') >= 0) return 'factura-funeraria';
   if (t.indexOf('curp') >= 0) return 'curp';
-  if (t.indexOf('estudios') >= 0) return 'estudios';
-  if (t.indexOf('dictamen') >= 0 || t.indexOf('incapacidades') >= 0) return 'medico';
-  if (t.indexOf('seguro social') >= 0 || t.indexOf('seguridad social') >= 0) return 'nss';
+  if (t.indexOf('estudios') >= 0) return 'constancia-estudios';
+  if (t.indexOf('dictamen') >= 0) return 'dictamen-invalidez';
+  if (t.indexOf('incapacidades') >= 0) return 'incapacidad';
+  if (t.indexOf('seguro social') >= 0 || t.indexOf('seguridad social') >= 0) return 'documento-nss';
   return 'doc';
 }
+// Dibujo de respaldo mientras no haya foto
+var DIB_DE = {
+  'ine': 'ine', 'carta-identidad': 'ine', 'clabe': 'clabe', 'acta-defuncion': 'acta', 'acta-matrimonio': 'acta', 'acta-nacimiento': 'acta',
+  'comprobante-domicilio': 'domicilio', 'estado-cuenta-afore': 'estado', 'hoja-no-adeudo': 'noadeudo', 'juicio-tutela': 'juicio',
+  'juicio-dependencia': 'juicio', 'factura-funeraria': 'factura', 'curp': 'curp', 'constancia-estudios': 'estudios',
+  'dictamen-invalidez': 'medico', 'incapacidad': 'medico', 'documento-nss': 'nss', 'doc': 'doc'
+};
 function imagenDoc(it) {
-  if (it.img) return '<img class="img-doc" src="' + esc(it.img) + '" alt="">';
-  return '<svg class="img-doc" viewBox="0 0 80 56" aria-hidden="true">' + DIB[tipoDoc(it)] + '</svg>';
+  var tipo = tipoDoc(it), foto = it.img || (G.fotos && G.fotos[tipo]);
+  if (foto) return '<img class="img-doc foto" src="' + esc(foto) + '" alt="" loading="lazy" draggable="false">';
+  return '<svg class="img-doc" viewBox="0 0 80 56" aria-hidden="true">' + DIB[DIB_DE[tipo] || 'doc'] + '</svg>';
 }
 
 /* ---------- Estado de la pantalla ---------- */

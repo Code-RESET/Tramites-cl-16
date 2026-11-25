@@ -31,7 +31,7 @@ fonts/          Atkinson Hyperlegible (licencia SIL OFL)
 2. Suba el número de versión **en dos lugares, el mismo número:** `version.json` y la línea `VERSION` de `sw.js`.
 3. Reemplace los archivos en el servidor. Los tótems revisan cada 15 minutos y se actualizan solos cuando nadie los usa.
 
-**Fotos reales de documentos:** cree la carpeta `fotos/`, agregue al requisito en `data.js` `img: "fotos/nombre.jpg"` y anote la foto en `ARCHIVOS` de `sw.js`. Sin `img` se muestra un dibujo genérico.
+**Fotos reales de documentos:** ponga cada foto en `fotos/` con el nombre de su tipo (`ine.jpg`, `acta-nacimiento.jpg`, …), quite las `//` de su renglón en `fotos` dentro de `data.js` y anótela en `ARCHIVOS` de `sw.js`. Una foto por tipo sirve para todos los trámites. Sin foto se muestra un dibujo.
 
 ## Comportamiento en el tótem
 

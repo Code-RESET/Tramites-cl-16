@@ -3,12 +3,12 @@
   Autor: Ing. Luis Ángel Díaz Bernal
   IMPORTANTE: en cada entrega cambie VERSION aquí y en version.json (el mismo número).
 */
-var VERSION = '1.0.0';
+var VERSION = '1.1.0';
 var CACHE = 'guia-tramites-imss-' + VERSION;
 var ARCHIVOS = [
   './', 'index.html', 'styles.css', 'app.js', 'data.js', 'version.json', 'manifest.json', 'icons/icono.svg',
   'fonts/atkinson-hyperlegible-400.woff2', 'fonts/atkinson-hyperlegible-700.woff2'
-  // Si agrega fotos reales de documentos (carpeta fotos/), anótelas aquí también.
+  // Fotos de documentos: agregue aquí cada foto de la carpeta fotos/ que anote en data.js, por ejemplo 'fotos/ine.jpg'.
 ];
 
 self.addEventListener('install', function (e) {

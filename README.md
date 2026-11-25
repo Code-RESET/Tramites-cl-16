@@ -43,6 +43,8 @@ fonts/          Atkinson Hyperlegible (licencia SIL OFL)
 
 **Código QR:** cada trámite muestra un QR que abre `…/?t=<trámite>&movil=1` en el celular del paciente: la misma lista, sin reinicio por inactividad ni recargas. La dirección sale de `urlPublica` en `data.js`.
 
+**Conteo de uso (para medir el piloto):** el tótem guarda en su propio navegador, por día, cuántas personas lo usan, qué trámites se consultan, cuántas listas se completan y cuántas veces se abren los bancos. No guarda búsquedas, horas exactas ni datos personales, y en el celular no cuenta nada. Para verlo: toque el reloj 5 veces seguidas (o abra `index.html?conteo=1`) y escriba el PIN de `pinPersonal` en `data.js` (**cámbielo antes de instalar**). Desde ahí se descarga un CSV o se borra el conteo. El conteo vive en ese navegador: si se borran los datos del navegador, se pierde.
+
 Pruebas: `index.html?demo=1` muestra el panel **Estado** (revisa que haya 17 trámites, categorías e íconos válidos). `index.html?t=prestamo` abre un trámite directo.
 
 Para el navegador del tótem se recomienda modo quiosco, por ejemplo: `chrome --kiosk --disable-pinch --overscroll-history-navigation=0 https://…/index.html`.

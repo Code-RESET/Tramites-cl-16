@@ -343,13 +343,15 @@ document.body.addEventListener('click', function (e) {
   if ((el = e.target.closest('[data-tecla]'))) { tecla(el.getAttribute('data-tecla')); return; }
   if ((el = e.target.closest('[data-item]'))) {
     var m = marcados[vista.id] || (marcados[vista.id] = {}), k = el.getAttribute('data-item');
-    m[k] = !m[k]; render(true); return;
+    m[k] = !m[k];
+    revisarCompleto(vista.id);
+    render(true); return;
   }
-  if ((el = e.target.closest('[data-go]'))) { vista = { t: 'tramite', id: el.getAttribute('data-go') }; teclado = false; render(); return; }
+  if ((el = e.target.closest('[data-go]'))) { vista = { t: 'tramite', id: el.getAttribute('data-go') }; teclado = false; contarConsulta(vista.id); render(); return; }
   if ((el = e.target.closest('[data-cat]')) && !el.hasAttribute('data-nofiltro')) { vista.cat = el.getAttribute('data-cat'); render(); return; }
   if (e.target.closest('[data-buscar]')) { teclado = true; renderInicio(); $main.scrollTop = 0; return; }
   if (e.target.closest('[data-home]')) { irAlInicio(false); return; }
-  if (e.target.closest('[data-bancos]')) { abrirBancos(true); return; }
+  if (e.target.closest('[data-bancos]')) { contar('bancos'); abrirBancos(true); return; }
   if (e.target.closest('[data-cerrar-modal]') || e.target === $modal) { abrirBancos(false); return; }
   if (e.target.closest('#a11yBtn')) { abrirA11y($a11yPanel.hidden); return; }
   if ((el = e.target.closest('[data-a11y]'))) { var c = el.getAttribute('data-a11y'); a11y(c, !document.documentElement.classList.contains(c)); return; }
@@ -364,7 +366,7 @@ function irAlInicio(total) {
   teclado = false;
   abrirBancos(false);
   abrirA11y(false);
-  if (total) { marcados = {}; a11y('hc', false); a11y('lg', false); verPanel = false; }
+  if (total) { marcados = {}; a11y('hc', false); a11y('lg', false); verPanel = false; finVisita(); cerrarPersonal(); }
   render();
 }
 
@@ -405,7 +407,7 @@ var ultimaActividad = Date.now(), tMover = null;
 // ¿Hay algo que reiniciar? En el menú limpio no se muestra la barra.
 function hayQueReiniciar() {
   var html = document.documentElement.classList;
-  return vista.t !== 'inicio' || vista.q || vista.cat || teclado || !$modal.hidden || !$a11yPanel.hidden ||
+  return !$personal.hidden || !$pin.hidden || vista.t !== 'inicio' || vista.q || vista.cat || teclado || !$modal.hidden || !$a11yPanel.hidden ||
     html.contains('hc') || html.contains('lg') || Object.keys(marcados).length > 0;
 }
 function actividad() {
@@ -492,7 +494,143 @@ if ('serviceWorker' in navigator && location.protocol !== 'file:') {
   navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' }).catch(function (e) { registrarError('No se registró el modo sin internet: ' + e.message); });
 }
 
+/* ========== Contador de uso (solo en el tótem, sin datos personales) ==========
+   Guarda en este navegador, por día, cuántas veces se abre cada trámite, cuántas listas se completan,
+   cuántas personas lo usan (visitas) y cuántas veces se abren los bancos. No guarda textos buscados,
+   horas exactas ni nada que identifique a alguien. En el celular (modo QR) no cuenta nada. */
+var CLAVE_CONTEO = 'guia-tramites-conteo-v1';
+var visitaActiva = false, completosVisita = {};
+function hoyISO() { var d = new Date(); return d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + ('0' + d.getDate()).slice(-2); }
+function leerConteo() {
+  try { var c = JSON.parse(localStorage.getItem(CLAVE_CONTEO)); if (c && c.dias) return c; } catch (_) {}
+  return { desde: hoyISO(), dias: {} };
+}
+function guardarConteo(c) {
+  try {
+    var dias = Object.keys(c.dias).sort();
+    while (dias.length > 400) delete c.dias[dias.shift()];   // guarda poco más de un año
+    localStorage.setItem(CLAVE_CONTEO, JSON.stringify(c));
+  } catch (e) { registrarError('No se pudo guardar el conteo: ' + e.message); }
+}
+// campo: 'visitas' | 'bancos' (número del día) o 'consultas' | 'completos' (por trámite)
+function contar(campo, id) {
+  if (MOVIL || DEMO) return;
+  var c = leerConteo(), h = hoyISO(), d = c.dias[h] || (c.dias[h] = {});
+  if (id) { d[campo] = d[campo] || {}; d[campo][id] = (d[campo][id] || 0) + 1; }
+  else d[campo] = (d[campo] || 0) + 1;
+  guardarConteo(c);
+}
+function contarConsulta(id) {
+  if (!visitaActiva) { visitaActiva = true; contar('visitas'); }
+  contar('consultas', id);
+}
+function revisarCompleto(id) {
+  var t = byId[id], m = marcados[id] || {}, n = 0;
+  Object.keys(m).forEach(function (k) { if (m[k]) n++; });
+  if (t && n === totalItems(t) && !completosVisita[id]) { completosVisita[id] = true; contar('completos', id); }
+}
+function finVisita() { visitaActiva = false; completosVisita = {}; }
+
+/* ---------- Vista para el personal: 5 toques seguidos al reloj, o ?conteo=1, y luego el PIN ---------- */
+var $personal = document.getElementById('personal'), $pin = document.getElementById('pinPad');
+var pinTecleado = '', toquesReloj = [], borrarArmado = false;
+document.querySelector('.reloj').addEventListener('click', function () {
+  var ahora = Date.now();
+  toquesReloj = toquesReloj.filter(function (t) { return ahora - t < 4000; });
+  toquesReloj.push(ahora);
+  if (toquesReloj.length >= 5) { toquesReloj = []; abrirPin(); }
+});
+function abrirPin() { pinTecleado = ''; pintarPin(); $pin.hidden = false; }
+function pintarPin(error) {
+  $pin.querySelector('.pin-puntos').textContent = pinTecleado.replace(/./g, '●') || ' ';
+  $pin.querySelector('.pin-error').hidden = !error;
+}
+function teclaPin(k) {
+  if (k === 'cancelar') { $pin.hidden = true; return; }
+  if (k === 'borrar') { pinTecleado = pinTecleado.slice(0, -1); pintarPin(); return; }
+  if (pinTecleado.length < 8) pinTecleado += k;
+  pintarPin();
+  if (pinTecleado.length === String(G.pinPersonal || '').length) {
+    if (pinTecleado === String(G.pinPersonal)) { $pin.hidden = true; abrirPersonal(); }
+    else { pinTecleado = ''; pintarPin(true); }
+  }
+}
+function cerrarPersonal() { $personal.hidden = true; $pin.hidden = true; borrarArmado = false; }
+
+function sumaDias(c, n) {   // n = cuántos días hacia atrás (0 = todos)
+  var lim = null;
+  if (n) { var d = new Date(); d.setDate(d.getDate() - (n - 1)); lim = d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + ('0' + d.getDate()).slice(-2); }
+  var r = { visitas: 0, bancos: 0, consultas: {}, completos: {}, totalConsultas: 0, totalCompletos: 0 };
+  Object.keys(c.dias).forEach(function (dia) {
+    if (lim && dia < lim) return;
+    var d = c.dias[dia];
+    r.visitas += d.visitas || 0; r.bancos += d.bancos || 0;
+    ['consultas', 'completos'].forEach(function (k) {
+      Object.keys(d[k] || {}).forEach(function (id) { r[k][id] = (r[k][id] || 0) + d[k][id]; r[k === 'consultas' ? 'totalConsultas' : 'totalCompletos'] += d[k][id]; });
+    });
+  });
+  return r;
+}
+function abrirPersonal() {
+  var c = leerConteo(), hoy = sumaDias(c, 1), sem = sumaDias(c, 7), tot = sumaDias(c, 0);
+  var fila = function (nombre, k) { return '<tr><th>' + nombre + '</th><td>' + (k === 'consultas' ? hoy.totalConsultas : k === 'completos' ? hoy.totalCompletos : hoy[k]) + '</td><td>' + (k === 'consultas' ? sem.totalConsultas : k === 'completos' ? sem.totalCompletos : sem[k]) + '</td><td>' + (k === 'consultas' ? tot.totalConsultas : k === 'completos' ? tot.totalCompletos : tot[k]) + '</td></tr>'; };
+  var lista = G.tramites.slice().sort(function (a, b) { return (tot.consultas[b.id] || 0) - (tot.consultas[a.id] || 0) || a.nombre.localeCompare(b.nombre, 'es'); });
+  var maxT = Math.max(1, tot.consultas[lista[0].id] || 0);
+  $personal.querySelector('.personal-cuerpo').innerHTML =
+    '<p class="personal-sub">Conteo guardado en este tótem desde el <b>' + esc(c.desde) + '</b>. No incluye datos personales.</p>' +
+    '<table class="resumen-uso"><thead><tr><th></th><th>Hoy</th><th>7 días</th><th>Total</th></tr></thead><tbody>' +
+      fila('Personas que consultaron', 'visitas') + fila('Trámites consultados', 'consultas') + fila('Listas completas', 'completos') + fila('Vieron bancos autorizados', 'bancos') +
+    '</tbody></table>' +
+    '<p class="label">Trámites más consultados</p>' +
+    '<div class="tabla-uso"><table><thead><tr><th>Trámite</th><th>Hoy</th><th>7 días</th><th>Total</th><th>Completas</th></tr></thead><tbody>' +
+    lista.map(function (t) {
+      var n = tot.consultas[t.id] || 0;
+      return '<tr><td><span class="barra-uso" style="--p:' + Math.round(n * 100 / maxT) + '%"></span><span class="nom">' + esc(t.nombre) + '</span></td><td>' + (hoy.consultas[t.id] || 0) + '</td><td>' + (sem.consultas[t.id] || 0) + '</td><td><b>' + n + '</b></td><td>' + (tot.completos[t.id] || 0) + '</td></tr>';
+    }).join('') + '</tbody></table></div>' +
+    '<p class="personal-nota">Los códigos QR se abren en el celular de cada paciente, así que esos escaneos no se pueden contar desde el tótem.</p>';
+  $personal.querySelector('[data-personal="borrar"]').textContent = 'Borrar conteo';
+  borrarArmado = false;
+  $personal.hidden = false;
+}
+function csvConteo() {
+  var c = leerConteo(), q = function (v) { v = String(v); return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; };
+  var filas = [['fecha', 'tipo', 'tramite_id', 'tramite', 'cantidad']];
+  Object.keys(c.dias).sort().forEach(function (dia) {
+    var d = c.dias[dia];
+    if (d.visitas) filas.push([dia, 'personas', '', '', d.visitas]);
+    if (d.bancos) filas.push([dia, 'bancos', '', '', d.bancos]);
+    ['consultas', 'completos'].forEach(function (k) {
+      Object.keys(d[k] || {}).forEach(function (id) { filas.push([dia, k === 'consultas' ? 'consulta' : 'lista_completa', id, byId[id] ? byId[id].nombre : id, d[k][id]]); });
+    });
+  });
+  return '﻿' + filas.map(function (f) { return f.map(q).join(','); }).join('\r\n') + '\r\n';
+}
+function descargarCSV() {
+  try {
+    var blob = new Blob([csvConteo()], { type: 'text/csv;charset=utf-8' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob); a.download = 'conteo-guia-tramites-' + hoyISO() + '.csv';
+    document.body.appendChild(a); a.click();
+    setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+  } catch (e) { registrarError('No se pudo descargar el CSV: ' + e.message); }
+}
+document.addEventListener('click', function (e) {
+  var el = e.target.closest('[data-pin]');
+  if (el) { teclaPin(el.getAttribute('data-pin')); return; }
+  el = e.target.closest('[data-personal]');
+  if (!el) return;
+  var a = el.getAttribute('data-personal');
+  if (a === 'cerrar') cerrarPersonal();
+  else if (a === 'csv') descargarCSV();
+  else if (a === 'borrar') {
+    if (!borrarArmado) { borrarArmado = true; el.textContent = 'Toque otra vez para borrar todo'; return; }
+    try { localStorage.removeItem(CLAVE_CONTEO); } catch (_) {}
+    abrirPersonal();
+  }
+});
+
 /* ========== Arranque ========== */
+if (params.get('conteo') === '1' && !MOVIL) abrirPin();
 var directo = params.get('t');
 if (directo && byId[directo]) vista = { t: 'tramite', id: directo };
 render();

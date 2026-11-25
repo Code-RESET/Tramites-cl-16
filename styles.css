@@ -239,6 +239,30 @@ main.con-teclado{padding-bottom:22rem}
 .sigue p{margin:0;flex:1;font-size:1.35rem;line-height:1.35}
 .sigue .big{background:var(--dorado)}
 
+/* ---------- Solo personal: PIN y conteo de uso ---------- */
+.modal.pin,.modal.personal{align-items:center;z-index:80}
+.pin-card{width:min(30rem,100%);align-items:stretch;text-align:center}
+.pin-puntos{margin:0;font-size:2.4rem;letter-spacing:.4em;min-height:3rem;color:var(--verde-oscuro)}
+html.hc .pin-puntos{color:#fff}
+.pin-error{margin:0;color:var(--no);font-weight:700;font-size:1.1rem}
+.pin-teclas{display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem}
+.pin-teclas .tecla{max-width:none;border:2px solid var(--line)}
+.personal-card{width:min(1060px,100%);max-height:90vh}
+.personal-sub,.personal-nota{margin:0;font-size:1.05rem;color:var(--muted);line-height:1.4}
+.resumen-uso,.tabla-uso table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
+.resumen-uso th,.resumen-uso td,.tabla-uso th,.tabla-uso td{padding:.55rem .6rem;border-bottom:1px solid var(--line);text-align:right;font-size:1.1rem}
+.resumen-uso th:first-child,.tabla-uso td:first-child,.tabla-uso th:first-child{text-align:left}
+.resumen-uso thead th,.tabla-uso thead th{font-size:.85rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.resumen-uso tbody th{font-weight:700}
+.resumen-uso tbody td{font-size:1.5rem;font-weight:700;color:var(--verde-oscuro)}
+html.hc .resumen-uso tbody td{color:#ffd400}
+.tabla-uso{overflow-x:auto}
+.tabla-uso td:first-child{position:relative;min-width:14rem}
+.barra-uso{position:absolute;left:0;top:.3rem;bottom:.3rem;width:var(--p);background:var(--dorado-claro);border-radius:6px;z-index:0}
+.tabla-uso .nom{position:relative}
+.personal-acciones{display:flex;gap:.6rem;flex-wrap:wrap;position:sticky;bottom:-1.3rem;background:var(--panel);padding-block:.7rem;border-top:1px solid var(--line)}
+.personal-acciones .big{flex:1;min-width:10rem}
+
 /* ---------- Pantalla de reposo ---------- */
 .reposo{position:fixed;inset:0;background:var(--verde-oscuro);z-index:90;overflow:hidden}
 .reposo-card{position:absolute;left:10%;top:15%;max-width:80%;color:#fff;transition:left 6s ease-in-out,top 6s ease-in-out}

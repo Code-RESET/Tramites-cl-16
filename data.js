@@ -54,6 +54,8 @@
     institucion: "IMSS",
     /* Dirección pública de la guía: el código QR de cada trámite abre esta página en el celular */
     urlPublica: "https://code-reset.github.io/Tramites-cl-16/",
+    /* PIN del personal para ver el conteo de uso (5 toques seguidos al reloj). CÁMBIELO antes de instalar. */
+    pinPersonal: "1234",
     horario: "8:00 a 15:00 hrs",
     horarioNota: "Hacer fila",
     reglaDeOro: "Todo debe presentarse en original y copia",

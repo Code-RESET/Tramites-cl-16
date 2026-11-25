@@ -74,6 +74,32 @@
   <button type="button" class="big">Sí, sigo aquí</button>
 </div>
 
+<!-- Solo personal: PIN y conteo de uso (se abre con 5 toques seguidos al reloj) -->
+<div class="modal pin" id="pinPad" hidden>
+  <div class="modal-card pin-card" role="dialog" aria-modal="true" aria-labelledby="pinTit">
+    <h2 id="pinTit">Acceso del personal</h2>
+    <p class="pin-puntos" aria-live="polite"> </p>
+    <p class="pin-error" hidden>PIN incorrecto. Intente de nuevo.</p>
+    <div class="pin-teclas">
+      <button type="button" class="tecla" data-pin="1">1</button><button type="button" class="tecla" data-pin="2">2</button><button type="button" class="tecla" data-pin="3">3</button>
+      <button type="button" class="tecla" data-pin="4">4</button><button type="button" class="tecla" data-pin="5">5</button><button type="button" class="tecla" data-pin="6">6</button>
+      <button type="button" class="tecla" data-pin="7">7</button><button type="button" class="tecla" data-pin="8">8</button><button type="button" class="tecla" data-pin="9">9</button>
+      <button type="button" class="tecla borrar" data-pin="cancelar">Salir</button><button type="button" class="tecla" data-pin="0">0</button><button type="button" class="tecla borrar" data-pin="borrar">⌫</button>
+    </div>
+  </div>
+</div>
+<div class="modal personal" id="personal" hidden>
+  <div class="modal-card personal-card" role="dialog" aria-modal="true" aria-labelledby="personalTit">
+    <h2 id="personalTit">Uso del tótem</h2>
+    <div class="personal-cuerpo"></div>
+    <div class="personal-acciones">
+      <button type="button" class="big" data-personal="csv">Descargar CSV</button>
+      <button type="button" class="big sec" data-personal="borrar">Borrar conteo</button>
+      <button type="button" class="big regresar" data-personal="cerrar">Cerrar</button>
+    </div>
+  </div>
+</div>
+
 <!-- Pantalla de reposo: aparece tras unos minutos sin uso y se mueve para no marcar la pantalla -->
 <div class="reposo" id="reposo" hidden>
   <div class="reposo-card" id="reposoCard">

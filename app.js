@@ -6,7 +6,9 @@
   Opciones por dirección:
     index.html            → modo tótem normal
     index.html?demo=1     → muestra el panel "Estado" con revisión de datos y errores (solo pruebas)
-    index.html?t=prestamo → abre directo un trámite (útil para pruebas o para un QR futuro)
+    index.html?t=prestamo → abre directo un trámite
+    index.html?t=prestamo&movil=1 → modo celular (lo abre el código QR): sin reinicio por inactividad,
+                                    sin pantalla de reposo, sin recargas automáticas y sin QR
 */
 (function () {
 "use strict";
@@ -14,6 +16,8 @@
 /* ---------- Configuración ---------- */
 var params = new URLSearchParams(location.search);
 var DEMO = params.get('demo') === '1';
+var MOVIL = params.get('movil') === '1';
+if (MOVIL) document.documentElement.classList.add('movil');
 var INACTIVO_INICIO = 60 * 1000;      // regresa al menú tras 60 s sin uso
 var AVISO_ANTES = 10 * 1000;          // "¿Sigue ahí?" 10 s antes de reiniciar
 var INACTIVO_REPOSO = 3 * 60 * 1000;  // pantalla de reposo tras 3 min sin uso (evita marcar la pantalla)
@@ -201,6 +205,24 @@ function oroHTML() {
   return '<div class="oro" role="note">' + svg(ICO.doc) + '<span>' + esc(G.reglaDeOro.toUpperCase()) + '<small>Lleve cada documento en original y su copia.</small></span></div>';
 }
 
+/* ========== Código QR: lleva la lista al celular ========== */
+// El QR siempre apunta a la página publicada (data.js → urlPublica), aunque el tótem la abra desde otro servidor.
+function urlMovil(t) {
+  var base = G.urlPublica || (location.origin + location.pathname);
+  return base + '?t=' + encodeURIComponent(t.id) + '&movil=1';
+}
+function qrHTML(t) {
+  if (MOVIL) return '';
+  if (typeof qrcode !== 'function') { registrarError('No cargó el generador de QR'); return ''; }
+  try {
+    var qr = qrcode(0, 'M');
+    qr.addData(urlMovil(t));
+    qr.make();
+    return '<div class="qrbox">' + qr.createSvgTag({ cellSize: 4, margin: 2, scalable: true }) +
+      '<p><b>Llévese esta lista en su celular</b>Abra la cámara de su teléfono y apunte a este código. Verá estos mismos requisitos para revisarlos en casa.</p></div>';
+  } catch (e) { registrarError('QR: ' + e.message); return ''; }
+}
+
 /* ========== Detalle del trámite (lista de cotejo) ========== */
 function renderTramite(t) {
   var m = marcados[t.id] || (marcados[t.id] = {});
@@ -230,6 +252,8 @@ function renderTramite(t) {
   if (t.notas && t.notas.length) {
     h += '<div class="alerta aviso"><b class="tit">' + icono('info') + 'Nota</b><ul>' + t.notas.map(function (n) { return '<li>' + esc(n) + '</li>'; }).join('') + '</ul></div>';
   }
+
+  h += qrHTML(t);
 
   h += '<div class="progreso"><div class="prog-txt">Toque cada documento que ya trae <span>' + hechos + ' de ' + total + '</span></div>' +
        '<div class="prog-bar' + (hechos === total ? ' completo' : '') + '"><i style="width:' + Math.round(hechos * 100 / total) + '%"></i></div></div>';
@@ -400,7 +424,7 @@ function mostrarReposo() { if (!$reposo.hidden) return; $reposo.hidden = false; 
 // El toque que quita el reposo no debe abrir nada que esté debajo
 $reposo.addEventListener('click', function (e) { e.stopPropagation(); e.preventDefault(); $reposo.hidden = true; clearInterval(tMover); actividad(); });
 
-setInterval(function () {
+if (!MOVIL) setInterval(function () {
   var pasado = Date.now() - ultimaActividad;
   var reiniciar = hayQueReiniciar();
   $idle.hidden = !reiniciar;
@@ -443,7 +467,7 @@ function pintarDemo() {
 
 /* ========== Vigilante: pantalla vacía, versión nueva y recarga diaria ========== */
 var inicioApp = Date.now();
-setInterval(function () {
+if (!MOVIL) setInterval(function () {
   if (!$main.children.length) recargar('pantalla vacía');
   var h = new Date();
   if (h.getHours() === 3 && h.getMinutes() < 5 && Date.now() - inicioApp > 60 * 60 * 1000) recargar('recarga diaria');
@@ -478,7 +502,7 @@ if (location.protocol !== 'file:') {
     document.getElementById('ver').textContent = 'v' + VERSION;
     pintarDemo();
   }).catch(function () {});
-  setInterval(revisarVersion, REVISAR_VERSION);
+  if (!MOVIL) setInterval(revisarVersion, REVISAR_VERSION);
 }
 
 })();

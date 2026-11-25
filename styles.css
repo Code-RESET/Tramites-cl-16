@@ -173,6 +173,16 @@ html.hc .item[aria-pressed="true"] .check svg path{stroke:#000}
 .listo svg{flex:none;width:3rem;height:3rem}
 .fuente{font-size:.9rem;color:var(--muted);margin:0}
 
+/* Código QR para llevar la lista en el celular */
+.qrbox{display:flex;align-items:center;gap:1.1rem;background:var(--panel);border:3px solid var(--verde);border-radius:var(--r);padding:.9rem 1.1rem}
+.qrbox svg{flex:none;width:9.5rem;height:9.5rem;background:#fff;border-radius:8px}
+.qrbox p{margin:0;font-size:1.2rem;line-height:1.4;color:var(--ink)}
+.qrbox b{display:block;font-size:1.45rem;color:var(--verde-oscuro);margin-bottom:.25rem}
+html.hc .qrbox b{color:#ffd400}
+
+/* Modo celular (abierto desde el QR): sin barra de inactividad */
+html.movil .idle{display:none}
+
 /* ---------- Barra de acciones (zona baja) ---------- */
 .acciones{display:flex;gap:.7rem;padding:.8rem max(16px,1.2rem);background:var(--panel);border-top:2px solid var(--line);box-shadow:0 -6px 16px rgba(19,50,43,.08)}
 .acciones:empty{display:none}
@@ -241,8 +251,11 @@ main.con-teclado{padding-bottom:22rem}
   .grid{grid-template-columns:repeat(2,1fr)}
   .pasos{grid-template-columns:1fr}
   .bancos{grid-template-columns:1fr}
-  .item{grid-template-columns:3.6rem 1fr}
-  .item .img-doc{display:none}
+  .item{grid-template-columns:2.8rem 4.6rem 1fr;gap:.6rem;padding:.8rem}
+  .check{width:2.6rem;height:2.6rem}
+  .item .img-doc{width:4.6rem;height:3.4rem}
+  .item .t{font-size:1.15rem}
+  .item .d{font-size:1rem}
 }
 @media (max-width:460px){
   .grid{grid-template-columns:1fr}
@@ -251,7 +264,10 @@ main.con-teclado{padding-bottom:22rem}
   .a11y-btn span{display:none}
   .a11y-btn{min-width:3.6rem}
   .hero h2,.det-cab h2{font-size:1.8rem}
-  .acciones{flex-direction:column}
+  .acciones{gap:.5rem;padding-block:.6rem}
+  .acciones .big{min-height:3.4rem;font-size:1rem;padding:.5rem .7rem;gap:.4rem}
+  .acciones .big svg{width:1.4rem;height:1.4rem}
+  .progreso .prog-txt{font-size:1.1rem}
   .tecla{font-size:1.2rem;min-height:3.2rem}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}

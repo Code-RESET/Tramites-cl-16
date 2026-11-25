@@ -17,6 +17,7 @@ Tótem táctil vertical de 65" para que el derechohabiente elija su trámite y v
 index.html      Página principal
 styles.css      Diseño (colores IMSS, alto contraste, letra grande)
 app.js          Lógica: menú, buscador con teclado en pantalla, lista de cotejo, bancos, inactividad, vigilante
+qrcode.js       Generador de códigos QR (Kazuhiko Arase, licencia MIT), sin internet
 data.js         Los 17 trámites, requisitos, alertas y bancos (transcritos de los carteles)
 sw.js           Copia local para funcionar sin red
 version.json    Número de versión
@@ -39,6 +40,8 @@ fonts/          Atkinson Hyperlegible (licencia SIL OFL)
 - Pantalla de reposo con movimiento tras 3 minutos sin uso.
 - Sin clic derecho, sin selección de texto, sin zoom (pellizco, doble toque, Ctrl + rueda).
 - Se recarga sola si detecta errores repetidos o pantalla vacía, y cada madrugada a las 3:00.
+
+**Código QR:** cada trámite muestra un QR que abre `…/?t=<trámite>&movil=1` en el celular del paciente: la misma lista, sin reinicio por inactividad ni recargas. La dirección sale de `urlPublica` en `data.js`.
 
 Pruebas: `index.html?demo=1` muestra el panel **Estado** (revisa que haya 17 trámites, categorías e íconos válidos). `index.html?t=prestamo` abre un trámite directo.
 

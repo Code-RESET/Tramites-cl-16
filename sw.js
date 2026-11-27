@@ -3,7 +3,7 @@
   Autor: Ing. Luis Ángel Díaz Bernal
   IMPORTANTE: en cada entrega cambie VERSION aquí y en version.json (el mismo número).
 */
-var VERSION = '1.3.0';
+var VERSION = '1.3.1';
 var CACHE = 'guia-tramites-imss-' + VERSION;
 var ARCHIVOS = [
   './', 'index.html', 'styles.css', 'app.js', 'data.js', 'qrcode.js', 'version.json', 'manifest.json', 'icons/icono.svg',

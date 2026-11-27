@@ -298,6 +298,7 @@ function render(mantenerScroll) {
   if (vista.t === 'tramite' && byId[vista.id]) renderTramite(byId[vista.id]);
   else { vista.t = 'inicio'; renderInicio(); }
   if (mantenerScroll) $main.scrollTop = y; else $main.scrollTop = 0;
+  pintarTeclado();   // el teclado solo se ve en el menú mientras se busca
   pintarDemo();
 }
 
